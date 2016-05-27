@@ -5,10 +5,10 @@
 #include <cstdlib>
 #include <thread>
 #include <unistd.h> 
-# define intr 100
+# define intr 100 //Gelman-Rubin diagnostics interval 
 
 using namespace std;
-unsigned int microseconds=1000000;
+unsigned int microseconds=1000000;//used for timely termination. 
 float sum[2][3]={};
 float intial_value[2][3]={},df=1.03;
 float chi_sq[2][1000000] ={},A[2][1000000] ={},B[2][1000000] ={},C[2][1000000] ={},x[10]={},y[10]={},dy[10]={},sa,sb,sc;
@@ -49,9 +49,9 @@ int chain(int itr)
                                    } 
      
 
-                             
+         n = 1000000;                    
          unsigned int total = n; // no of iteration 
-         n = 1000000;
+        
         // usleep(microseconds);
          default_random_engine generator; // normal distribution
          
@@ -71,8 +71,8 @@ int chain(int itr)
          q[0]=0;
          for (i=0;i<10;i++) // setting intial value of chi.sq with entered parameter
                         {
-                       ye[i]=(mean * pow(x[i],2)) + (mean1 * x[i]) + mean2;
-                       //   ye[i]=(mean*x[i])+mean2;
+                       ye[i]=(mean * pow(x[i],2)) + (mean1 * x[i]) + mean2; //equation of parabola
+                  
                         f = (ye[i]-y[i])/dy[i];
                         x2 = pow(f,2);
                         q[0]=q[0]+x2;
@@ -166,7 +166,7 @@ int chain(int itr)
         }
 
 //***************************************************************************************************************************************
-int R()
+int R()//Gelman-Rubin Diagnostics
        {
 	float theta_bar_1_a,theta_bar_1_b,theta_bar_1_c,theta_bar_2_a,theta_bar_2_b,theta_bar_2_c,theta_bar_a,theta_bar_b,theta_bar_c,B_a,B_b,B_c;
 	float Sa,Sb,Sc,S_1_a=0,S_1_b=0,S_1_c=0,S_2_a=0,S_2_b=0,S_2_c=0,S_1_af,S_1_bf,S_1_cf,S_2_af,S_2_bf,S_2_cf,Wa,Wb,Wc,Nf,Mf,Ra,Rb,Rc;
@@ -300,10 +300,8 @@ printv.open("variance.csv");
                   cout<<v<<"\t\t"<<v1<<"\t"<<v2<<endl;
  printv<<"#a,#b,#c\n"; 
  printv<<v<<","<<v1<<","<<v2<<endl;
-printv.close();
+ printv.close();
 		ofstream print;
-		
-	
 		print.open("chain1.csv");
 		print<<"#chisq,#a,#b,#c\n";
 
@@ -311,8 +309,7 @@ printv.close();
 			 {
 			  print<<chi_sq[0][i]<<","<<A[0][i]<<","<<B[0][i]<<","<<C[0][i]<<"\n";
      			 if (i>3 &&  chi_sq[0][i]==0 && A[0][i]==0 /*&& B[0][i]==0 && C[0][i]==0*/) {break;}
-			      			 
-			 }
+			  }
 		print.close();
 
 		print.open("chain2.csv");
@@ -330,8 +327,8 @@ printv.close();
 		}
     
 		cout<<"\n"<<Ra<<"\t\t"<<Rb<<"\t\t"<<Rc/*<<"\t"<<N/2<<"\t"<<en*/;  
-printR<<Ra<<","<<Rb<<","<<Rc<<endl;  
-           en=en+intr;
+                printR<<Ra<<","<<Rb<<","<<Rc<<endl;  
+                en=en+intr;
 		N=N+intr;                             
 		 }
 
@@ -353,15 +350,15 @@ printR<<Ra<<","<<Rb<<","<<Rc<<endl;
             cout<<"\nChains started to execute concurrently\n";
 
 
-	    thread t1(chain,0);
-	    thread t2(chain,1);
+	    thread t1(chain,0);//generate chain1.csv
+	    thread t2(chain,1);//generate chain2.csv
 	    thread t3(R);
 
 	    t1.join();
 	    t2.join();
 	    t3.join();
 
-	    cout<<"\nTerminated : See profile.txt\n\n";
+	  
 	    return 0;
 
 	    }
