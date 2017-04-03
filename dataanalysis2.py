@@ -65,7 +65,7 @@ ax = plt.subplot(111)#, aspect='equal')
 for j in xrange(1, 4):
     ell = Ellipse(xy=(np.mean(p), np.mean(q)),
                   width=lambda_[0]*j*2, height=lambda_[1]*j*2,
-                  angle= np.rad2deg(np.arccos(v[0, 0])))
+                  angle= np.rad2deg(np.arcsin(v[1, 0])))
     ell.set_facecolor('none')
     ax.add_artist(ell)
 plt.scatter(p, q)
